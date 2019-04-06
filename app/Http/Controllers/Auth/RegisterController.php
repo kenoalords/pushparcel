@@ -84,4 +84,9 @@ class RegisterController extends Controller
         }
         return $user;
     }
+    
+    public function showRegistrationForm()
+    {
+        return redirect('login');
+    }
 }

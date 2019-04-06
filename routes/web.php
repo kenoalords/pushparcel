@@ -34,6 +34,10 @@ Route::get('/privacy-policy', function(){
     return view('page.privacy');
 })->name('privacy');
 
+Route::get('/service-areas', function(){
+    return view('page.service-areas');
+})->name('service_areas');
+
 Route::get('/track-parcel', function(){
     return view('page.track');
 })->name('track_parcel');

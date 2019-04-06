@@ -7,8 +7,24 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name') }} - {{ config('app.description') }}</title>
+    <title>@yield('title') | {{ config('app.name') }} - {{ config('app.description') }}</title>
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="@yield('title') | {{ config('app.name') }} - {{ config('app.description') }}">
+    <meta name="description" content="@yield( 'description' )">
 
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ Request::url() }}">
+    <meta property="og:title" content="@yield('title') | {{ config('app.name') }} - {{ config('app.description') }}">
+    <meta property="og:description" content="@yield('description')">
+    <meta property="og:image" content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ Request::url() }}">
+    <meta property="twitter:title" content="@yield('title') | {{ config('app.name') }} - {{ config('app.description') }}">
+    <meta property="twitter:description" content="@yield('description')">
+    <meta property="twitter:image" content="https://metatags.io/assets/meta-tags-16a33a6a8531e519cc0936fbba0ad904e52d35f34a46c97a2c9f6f7dd7d336f2.png">
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,700,900" rel="stylesheet" type="text/css">

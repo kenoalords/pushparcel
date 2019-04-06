@@ -24,6 +24,7 @@
                     <li><a href="{{ route('get_estimate') }}">Get Estimate</a></li>
                     <li><a href="{{ route('request_pickup') }}">Request Pickup</a></li>
                     <li><a href="{{ route('track_parcel') }}">Track Parcel</a></li>
+                    <li><a href="{{ route('service_areas') }}">Service Areas</a></li>
                     <li><a href="{{ route('contact') }}">Contact Us</a></li>
                     <!-- <li><a href="{{ route('login') }}">Login</a></li> -->
                 </ul>

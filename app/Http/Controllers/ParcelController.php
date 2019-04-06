@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Notifications\Notifiable;
 use App\Models\Parcel;
 use Illuminate\Support\Str;
 use App\Models\ParcelItem;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\ParcelRequest;
+use App\Notifications\SmsNotification;
 
 class ParcelController extends Controller
 {
+    use Notifiable;
+
     public function parcel(Request $request)
     {
         return view('parcel.new');
@@ -50,7 +54,10 @@ class ParcelController extends Controller
             if ( $save_request->payment_type === 'online' ){
                 // Process callback to PayStack
             }
-
+            $phone = preg_replace("/\s/", '', $request->sender_phone);
+            $phone_number = preg_replace("/^0/", '+234', $phone);
+            $message = "Hello {$request->sender_name}, Thank you for requesting our dispatch service.";
+            $save_request->notify(new SmsNotification($phone_number, $message));
             return response()->json([ 'parcel' => $save_request, 'payment_type' => $save_request->payment_type ], 200);
         }
     }

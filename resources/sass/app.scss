@@ -203,16 +203,16 @@ h1, h2, h3, h4{
         box-shadow: 0 0 0px 2px rgba(10,10,10,.4);
     }
     &::-webkit-input-placeholder{
-        color: #777;
+        color: #aaa;
     }
     &::-moz-placeholder{
-        color: #777;
+        color: #aaa;
     }
     &:-moz-placeholder{
-        color: #777;
+        color: #aaa;
     }
     &:-ms-placeholder{
-        color: #777;
+        color: #aaa;
     }
 }
 
@@ -475,6 +475,30 @@ div{
     }
 }
 
+#auth-form{
+    .field{
+        margin-bottom: 1em;
+    }
+}
+
+.payment_type{
+    label{
+        display: inline-block;
+        color: #111;
+        font-weight: 700;
+        &:first-of-type{
+            margin-right: 2em;
+        }
+    }
+}
+
+#request-form{
+    label{
+        color: #111;
+        font-weight: 700;
+    }
+}
+
 @media screen and (max-width:540px){
     #app{
         margin-top: 2.8em;
@@ -555,6 +579,7 @@ div{
                 flex-shrink: 0;
                 margin-right: 0;
                 margin-bottom: .75em;
+                width: 100%;
             }
         }
     }
@@ -563,6 +588,14 @@ div{
         width: 100%;
         select{
             width: 100%;
+        }
+    }
+
+    .payment_type{
+        label{
+            display: block;
+            margin-bottom: 1em;
+
         }
     }
 

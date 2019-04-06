@@ -4,24 +4,28 @@
         <ul class="errors" v-if="errors.length > 0">
             <li v-for="error in errors">{{ error.message }}</li>
         </ul>
-        <form action="#" method="post" id="request-form" @change="checkDetailFields" autocomplete="off">
-
+        <form action="#" method="post" id="request-form" @change="checkDetailFields" autocomplete="false">
+        <input type="hidden" style="display:none" autocomplete="false">
         <h3 class="title is-5">Senders details</h3>
             <div class="field is-grouped">
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.sender.fullname" placeholder="Fullname" class="input">
+                    <label for="fullname">Fullname</label>
+                    <input id="fullname" type="text" v-model="parcel.sender.fullname" placeholder="John Olawale" class="input">
                 </p>
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.sender.email" placeholder="Email address" class="input">
+                    <label for="s-email">Email address</label>
+                    <input type="text" id="s-email" v-model="parcel.sender.email" placeholder="john.olawale@gmail.com" class="input">
                 </p>
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.sender.phone" placeholder="Phone number" class="input">
+                    <label for="s-email">Phone number</label>
+                    <input type="text" v-model="parcel.sender.phone" maxlength="14" placeholder="08023456789" class="input phone">
                 </p>
             </div>
 
             <div class="field is-grouped">
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.sender.address" placeholder="Senders address" class="input" id="estimate_from_address" autocomplete="off">
+                    <label for="estimate_from_address">Address</label>
+                    <input type="text" v-model="parcel.sender.address" placeholder="" class="input" id="estimate_from_address" autocomplete="anyrandomstring">
                 </p>
             </div>
 
@@ -32,32 +36,26 @@
             <h3 class="title is-5">Receiver details</h3>
             <div class="field is-grouped">
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.receiver.fullname" placeholder="Fullname" class="input">
+                    <label for="">Receiver fullname</label>
+                    <input type="text" v-model="parcel.receiver.fullname" placeholder="Bright Okon" class="input">
                 </p>
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.receiver.phone" placeholder="Phone number" class="input">
+                    <label for="">Receiver phone number</label>
+                    <input type="text" v-model="parcel.receiver.phone" maxlength="14" placeholder="08023456789" class="input phone">
                 </p>
             </div>
 
             <div class="field is-grouped">
                 <p class="control is-expanded">
-                    <input type="text" v-model="parcel.receiver.address" placeholder="Delivery address" class="input" id="estimate_to_address">
+                    <label for="estimate_to_address">Delivery address</label>
+                    <input autocomplete="anyrandomstring" type="text" v-model="parcel.receiver.address" class="input" id="estimate_to_address">
                 </p>
 
             </div>
             <hr>
             <!--  Parcel Items  -->
-            <div class="level is-mobile">
-                <div class="level-left">
-                    <div class="level-item">
-                        <h3 class="title is-5">Package items</h3>
-                    </div>
-                </div>
-                <div class="level-left">
-                    <div class="level-item">
-                        <a class="button is-white" @click="addItem">+ add item</a>
-                    </div>
-                </div>
+            <div class="field">
+                <h3 class="title is-5">Package items</h3>
             </div>
 
             <div class="field is-grouped" v-for="(item, index) in parcel.parcelitems" v-bind:key="index">
@@ -74,22 +72,27 @@
                     <input type="number" v-model="item.quantity" class="input">
                 </p>
             </div>
-
+            <div class="field">
+                <a class="button" @click="addItem">+ add item</a>
+            </div>
             <hr>
 
-            <div class="field">
+            <div class="field payment_type">
                 <h3 class="title is-5">How will you like to pay?</h3>
-                <div class="select">
+                <!-- <div class="select">
                     <select v-model="parcel.payment_type">
-                        <option :value="0">Select</option>
+                        <option value="0">Select</option>
                         <option v-for="item in parcel.paymentType" :value="item[0]">{{ item[1] }}</option>
                     </select>
-                </div>
+                </div> -->
+                <label v-for="item in parcel.paymentType">
+                    <input type="radio" :value="item[0]" v-model="parcel.payment_type" id=""> {{ item[1] }}
+                </label>
             </div>
             <br><br>
 
-            <div class="box is-raised" style="border: 1px solid #ddd; border-radius: 2px;">
-                <div class="level">
+            <div class="field box" style="margin-bottom: 2em">
+                <div class="level is-mobile">
                     <div class="level-item">
                         <div class="has-text-centered">
                             <div class="spaced-text">Estimated fare</div>
@@ -106,13 +109,19 @@
                 </div>
             </div>
 
-
             <div class="field">
                 <button class="button is-action is-medium" :class="{ 'is-loading' : isLoading }" @click.prevent="submitParcelRequest" :disabled="!isValid">Make request</button>
             </div>
         </form>
         <hr>
-        <h4 class="title is-6 is-size-6-mobile">Secured online payment powered by <a href="https://paystack.com" target="_blank"><strong>PayStack</strong></a></h4>
+        <div class="has-text-centered">
+            <h4 class="title is-6 is-size-6-mobile">Secured online payment powered by <a href="https://paystack.com" target="_blank"><strong>PayStack</strong></a></h4>
+            <figure class="image" style="max-width: 256px; margin: 1em auto;">
+                <a href="https://paystack.com" target="_blank">
+                    <img src="/images/paystack.png" alt="PayStack">
+                </a>
+            </figure>
+        </div>
     </div>
 </template>
 
@@ -131,7 +140,7 @@
                     }],
                     paymentType:[
                         [ 'online', 'Online payment' ],
-                        [ 'pop', 'Payment on pickup' ],
+                        [ 'pop', 'Pay on pickup' ],
                     ],
                     price: 0,
                     distance: 0,
@@ -323,6 +332,14 @@
             },
         },
         mounted() {
+
+            $('.phone').each(function(i, el){
+                new Cleave(el, {
+                    phone: true,
+                    phoneRegionCode: 'NG',
+                });
+            });
+
             if ( this.loggedUser !== null ){
                 this.getUserProfile(this.loggedUser.id);
             }

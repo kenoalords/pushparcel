@@ -5,7 +5,7 @@
 <div class="box is-raised">
     <div class="title is-5">{{ __('Login') }}</div>
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" id="auth-form">
         @csrf
 
         <div class="field">
@@ -44,14 +44,7 @@
                 {{ __('Forgot Your Password?') }}
             </a>
         @endif
-        <hr>
-        <div class="field">
-            @if (Route::has('register'))
-                <p>Don't have an account? <a href="{{ route('register') }}">
-                    {{ __('Click here to sign up') }}
-                </a></p>
-            @endif
-        </div>
+
     </form>
 </div>
 

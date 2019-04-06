@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'About Us')
+@section('description', 'Our goal is to help your business grow by reaching more of your customers with our professional dispatch rider delivery service within Lagos')
+
 @section('content')
 
 <div class="section is-medium">

@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Careers')
+@section('description', 'Looking for career opportunities in our company?')
+
 @section('content')
 
 <div class="section is-medium">

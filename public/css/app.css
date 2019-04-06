@@ -9334,16 +9334,16 @@ h1, h2, h3, h4 {
   box-shadow: 0 0 0px 2px rgba(10, 10, 10, 0.4);
 }
 .input::-webkit-input-placeholder, .textarea::-webkit-input-placeholder, .select::-webkit-input-placeholder {
-  color: #777;
+  color: #aaa;
 }
 .input::-moz-placeholder, .textarea::-moz-placeholder, .select::-moz-placeholder {
-  color: #777;
+  color: #aaa;
 }
 .input:-moz-placeholder, .textarea:-moz-placeholder, .select:-moz-placeholder {
-  color: #777;
+  color: #aaa;
 }
 .input:-ms-placeholder, .textarea:-ms-placeholder, .select:-ms-placeholder {
-  color: #777;
+  color: #aaa;
 }
 
 .bike-record {
@@ -9580,6 +9580,24 @@ div.is-loading:before {
   margin-bottom: 0;
 }
 
+#auth-form .field {
+  margin-bottom: 1em;
+}
+
+.payment_type label {
+  display: inline-block;
+  color: #111;
+  font-weight: 700;
+}
+.payment_type label:first-of-type {
+  margin-right: 2em;
+}
+
+#request-form label {
+  color: #111;
+  font-weight: 700;
+}
+
 @media screen and (max-width: 540px) {
   #app {
     margin-top: 2.8em;
@@ -9654,6 +9672,7 @@ div.is-loading:before {
     flex-shrink: 0;
     margin-right: 0;
     margin-bottom: 0.75em;
+    width: 100%;
   }
 
   .select {
@@ -9661,6 +9680,11 @@ div.is-loading:before {
   }
   .select select {
     width: 100%;
+  }
+
+  .payment_type label {
+    display: block;
+    margin-bottom: 1em;
   }
 
   #request-form button.is-action {

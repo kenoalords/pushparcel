@@ -15,7 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
     'description'   => env('APP_DESCRIPTION', 'Dispatch Riders in Lagos'),
-    'contact_number'    => '08094366415',
+    'contact_number'    => '08090923436',
     'contact_email'    => 'hello@pushparcel.com',
     'social'    => [
         'facebook'  => 'https://facebook.com',
@@ -173,6 +173,7 @@ return [
         /*
          * Package Service Providers...
          */
+         NotificationChannels\Twilio\TwilioProvider::class,
 
         /*
          * Application Service Providers...

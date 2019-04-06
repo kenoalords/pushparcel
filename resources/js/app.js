@@ -12,6 +12,8 @@ window.Vuex = require('vuex');
 window.google = google;
 window.swal = require('sweetalert');
 window.PaystackPop = PaystackPop;
+window.Cleave = require("cleave.js");
+window.cleavephone = require("cleave.js/dist/addons/cleave-phone.ng");
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
