@@ -22,6 +22,10 @@ return [
         'twitter'  => 'https://twitter.com',
         'instagram'  => 'https://instagram.com',
     ],
+    'office_address'    => '15 Afariogun street, Ikeja, Lagos',
+    'google_maps_key'   => env('GOOGLE_MAPS_KEY'),
+    'paystack_url'      => env('PAYSTACK_URL'),
+    'paystack_key'      => env('PAYSTACK_KEY'),
 
     /*
     |--------------------------------------------------------------------------

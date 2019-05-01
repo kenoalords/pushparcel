@@ -9214,6 +9214,9 @@ h1, h2, h3, h4 {
   margin-bottom: 1em;
   font-weight: 900;
 }
+h1.title, h2.title, h3.title, h4.title {
+  font-weight: 900;
+}
 
 .container {
   max-width: 960px;
@@ -9372,12 +9375,11 @@ h1, h2, h3, h4 {
 .errors {
   padding: 1em;
   margin-bottom: 2em;
-  border: 1px solid #ff8000;
+  border: 1px solid #f00;
   border-left-width: 5px;
 }
 .errors li {
-  color: #ff8000;
-  font-weight: bold;
+  color: #f00;
   display: block;
   margin-bottom: 5px;
 }
@@ -9596,6 +9598,29 @@ div.is-loading:before {
 #request-form label {
   color: #111;
   font-weight: 700;
+}
+
+.checkout-form .field label {
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 2em;
+}
+.checkout-form .field button {
+  margin-top: 1em;
+}
+
+#parcel-estimate {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 9;
+  margin-bottom: 0;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
+}
+#parcel-estimate .level {
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 @media screen and (max-width: 540px) {

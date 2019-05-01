@@ -69,6 +69,9 @@ p{
 h1, h2, h3, h4{
     margin-bottom: 1em;
     font-weight: 900;
+    &.title{
+        font-weight: 900;
+    }
 }
 
 .container{
@@ -250,11 +253,10 @@ h1, h2, h3, h4{
 .errors{
     padding: 1em;
     margin-bottom: 2em;
-    border: 1px solid #ff8000;
+    border: 1px solid #f00;
     border-left-width: 5px;
     li{
-        color: #ff8000;
-        font-weight: bold;
+        color: #f00;
         display: block;
         margin-bottom: 5px;
     }
@@ -496,6 +498,33 @@ div{
     label{
         color: #111;
         font-weight: 700;
+    }
+}
+
+.checkout-form{
+    .field{
+        label{
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 2em;
+        }
+        button{
+            margin-top: 1em;
+        }
+    }
+}
+
+#parcel-estimate{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 9;
+    margin-bottom: 0;
+    box-shadow: 0 -2px 12px rgba(black, .2);
+    .level{
+        max-width: 480px;
+        margin: 0 auto;
     }
 }
 

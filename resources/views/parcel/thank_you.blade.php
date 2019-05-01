@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section( 'title', 'Thank You' )
 @section('content')
 
 <div class="section is-medium">
@@ -40,12 +40,14 @@
         <div>
             <h4 class="title is-4 bold">Delivery Cost: <span class="has-text-danger">₦{{ number_format(floor($parcel->price)) }}</span></h4>
             @if( $parcel->payment_type === 'online' )
-                <h4 class="title is-6">Payment Method: Online Payment</h4>
-                <h4 class="title is-6">Payment Status: {{ $parcel->payment->status }}</h4>
+                <h4 class="title is-6">Payment Method: <span class="has-text-danger">Online Payment</span></h4>
+                <h4 class="title is-6">Payment Status: <span class="has-text-danger">{{ $parcel->payment->status }}</span></h4>
             @elseif( $parcel->payment_type === 'pop' )
-                <h4 class="title is-6">Payment Method: Pay on Pickup</h4>
+                <h4 class="title is-6">Payment Method: <span class="has-text-danger">Pay on Pickup</span></h4>
             @endif
         </div>
+        <hr>
+        <p><a href="{{ route('index') }}" class="button is-primary">Done</a> <a href="{{ route('request_pickup') }}" class="button is-highlight">Make another request</a></p>
     </div>
 </div>
 

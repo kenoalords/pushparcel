@@ -2055,12 +2055,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2077,12 +2071,16 @@ __webpack_require__.r(__webpack_exports__);
         distance: 0,
         payment_type: null
       },
-      isValid: false,
+      senderAddress: '',
+      receiverAddress: '',
+      isValid: true,
       loggedUser: this.user !== null ? JSON.parse(this.user) : null,
       geocoder: new google.maps.Geocoder(),
       distance: new google.maps.DistanceMatrixService(),
       errors: [],
-      isLoading: false
+      isLoading: false,
+      distanceCost: null,
+      pickupCost: null
     };
   },
   computed: {
@@ -2090,11 +2088,22 @@ __webpack_require__.r(__webpack_exports__);
       return this.parcel.price !== 0 ? parseInt(Math.round(this.parcel.price)).toLocaleString() : "0";
     },
     computedDistance: function computedDistance() {
-      return this.parcel.distance !== 0 ? Math.round(this.parcel.distance / 1000) + 'km' : "0km";
+      return this.parcel.distance !== 0 ? this.parcel.distance + 'km' : "0km";
     }
   },
   props: {
     user: null
+  },
+  watch: {
+    senderAddress: function senderAddress() {
+      this.debounceGetDistance();
+    },
+    receiverAddress: function receiverAddress() {
+      this.debounceGetDistance();
+    }
+  },
+  created: function created() {
+    this.debounceGetDistance = _.debounce(this.getDistanceEstimate, 1000);
   },
   methods: {
     getParameterByName: function getParameterByName(name, url) {
@@ -2106,10 +2115,42 @@ __webpack_require__.r(__webpack_exports__);
       if (!results[2]) return '';
       return decodeURIComponent(results[2].replace(/\+/g, ' '));
     },
+    formatErrorField: function formatErrorField(name) {
+      return this.errors.indexOf(name) !== -1 ? true : false;
+    },
     submitParcelRequest: function submitParcelRequest() {
       var _this = this;
 
-      _this.errors = []; // validate email addresses
+      _this.errors = []; // Validate fullname
+
+      if (!_this.parcel.sender.fullname) {
+        _this.errors.push({
+          key: 'sender_fullname',
+          message: 'Please provide the senders fullname'
+        });
+      }
+
+      if (!_this.parcel.receiver.fullname) {
+        _this.errors.push({
+          key: 'receiver_fullname',
+          message: 'Please provide the receivers fullname'
+        });
+      }
+
+      if (!_this.parcel.receiver.phone) {
+        _this.errors.push({
+          key: 'receiver_phone',
+          message: 'Please provide the receivers phone number'
+        });
+      }
+
+      if (!_this.parcel.sender.phone) {
+        _this.errors.push({
+          key: 'sender_phone',
+          message: 'Please provide the senders phone number'
+        });
+      } // validate email addresses
+
 
       if (!this.validEmail(_this.parcel.sender.email)) {
         _this.errors.push({
@@ -2126,34 +2167,22 @@ __webpack_require__.r(__webpack_exports__);
             message: 'Please provide a description, weight and quantity of the item you want shipped'
           });
         }
-      } // Validate payment method
-
-
-      if (_this.parcel.payment_type === null || _this.parcel.payment_type == 0) {
-        _this.errors.push({
-          key: 'pt',
-          message: 'Please select an appropraite payment type'
-        });
       } // Validate price
 
 
       if (_this.parcel.price === 0) {
         _this.errors.push({
           key: 'price',
-          message: 'We are unable to process your request because we cannot determine your estimated fare. Please check your address field and correct any mistakes there.'
-        });
-      } // Validate distance
-
-
-      if (_this.parcel.distance === 0) {
-        _this.errors.push({
-          key: 'distance',
-          message: 'We are unable to process your request because we cannot determine your estimated distance. This helps us calculate your estimated fare. Please check your address fields for any errors'
+          message: 'We are unable to process your request because we cannot determine your fare. Please check your address fields for errors or call us on ' + window.push.contactNumber + ' to make your request.'
         });
       }
 
       if (_this.errors.length > 0) {
-        alert("Please check for errors");
+        swal({
+          text: "Please check the form for errors",
+          title: "Errors Found!",
+          icon: 'error'
+        });
         return;
       }
 
@@ -2164,57 +2193,24 @@ __webpack_require__.r(__webpack_exports__);
         sender_fullname: _this.parcel.sender.fullname,
         sender_email: _this.parcel.sender.email,
         sender_phone: _this.parcel.sender.phone,
-        sender_address: _this.parcel.sender.address,
+        sender_address: _this.senderAddress,
         receiver_fullname: _this.parcel.receiver.fullname,
         receiver_phone: _this.parcel.receiver.phone,
-        receiver_address: _this.parcel.receiver.address,
+        receiver_address: _this.receiverAddress,
         price: _this.parcel.price,
         distance: _this.parcel.distance,
-        items: _this.parcel.parcelitems,
-        payment_type: _this.parcel.payment_type
+        items: _this.parcel.parcelitems
       }; // Post data to server
 
       axios.post('/app/parcel', data).then(function (response) {
         _this.isLoading = false;
-        var payload = response.data;
+        var payload = response.data; // $('body').removeClass('is-loading');
 
-        if (payload.payment_type === "online") {
-          var amount = Math.floor(payload.parcel.price) * 100;
-          var paystack = PaystackPop.setup({
-            key: 'pk_test_4dfe0155f15b8fd873e52b04bffc5537993488c7',
-            email: payload.parcel.sender_email,
-            amount: amount,
-            currency: "NGN",
-            callback: function callback(response) {
-              if (response.status === 'success') {
-                axios.post('/request-pickup/' + payload.parcel.uuid + '/payment', response).then(function (response) {
-                  swal({
-                    title: 'Success',
-                    text: 'Your payment was made successfully. You will be redirected in 3seconds',
-                    icon: 'success',
-                    closeOnClickOutside: false,
-                    closeOnEsc: false,
-                    buttons: false
-                  });
-                  setTimeout(function () {
-                    window.location.href = '/thank-you/' + payload.parcel.uuid;
-                  }, 3000);
-                }).catch(function (error) {
-                  console.log(error);
-                });
-              }
-
-              _this.isLoading = false;
-            },
-            onClose: function onClose() {
-              // PayStack window closed
-              _this.isLoading = false;
-            }
-          });
-          paystack.openIframe();
-        }
+        window.location.href = '/app/parcel/' + payload.parcel.uuid + '/checkout';
+        return;
       }).catch(function (e) {
         console.log('An error occured', e);
+        $('body').removeClass('is-loading');
         _this.isLoading = false;
       });
     },
@@ -2250,40 +2246,54 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     checkDetailFields: function checkDetailFields() {
-      if (this.parcel.sender.fullname && this.parcel.sender.email && this.parcel.sender.phone && this.parcel.sender.address && this.parcel.receiver.fullname && this.parcel.receiver.phone && this.parcel.receiver.address) {
-        var _this = this;
+      if (this.parcel.sender.fullname && this.parcel.sender.email && this.parcel.sender.phone && this.senderAddress && this.parcel.receiver.fullname && this.parcel.receiver.phone && this.receiverAddress) {
+        this.isValid = true;
+      } else {
+        this.isValid = false;
+      }
+    },
+    getDistanceEstimate: function getDistanceEstimate() {
+      var _this = this;
 
-        var data = {
-          senderAddress: this.parcel.sender.address,
-          receiverAddress: this.parcel.receiver.address
-        };
-        _this.isValid = true;
-        var distance = this.distance.getDistanceMatrix({
-          origins: [data.senderAddress],
-          destinations: [data.receiverAddress],
+      if (_this.senderAddress && _this.receiverAddress) {
+        var distance = _this.getDistance(_this.senderAddress, _this.receiverAddress).then(function (result) {
+          var deliveryDistance = Math.ceil(result[0].distance.value / 1000),
+              pickupDistance = Math.ceil(result[1].distance.value / 1000),
+              deliveryCost = deliveryDistance > 15 ? deliveryDistance * window.push.costPerKmLong + window.push.basePrice : deliveryDistance * window.push.costPerKmShort + window.push.basePrice,
+              pickupCost = pickupDistance * window.push.pickupCostPerKM,
+              totalCost = deliveryCost + pickupCost;
+          _this.parcel.price = totalCost;
+          _this.parcel.distance = deliveryDistance;
+        });
+      }
+    },
+    getDistance: function getDistance(origin, destination) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        var distance = _this.distance.getDistanceMatrix({
+          origins: [origin],
+          destinations: [destination, window.push.officeAddress],
           unitSystem: google.maps.UnitSystem.METRIC,
           travelMode: 'DRIVING'
         }, function (results, status) {
           if (status === 'OK') {
-            var row = results.rows[0].elements[0];
+            var row = results.rows[0].elements; // console.log(results);
 
-            if (row.status === 'OK') {
-              var basePrice = window.push.basePrice;
-              var costPerDistance = row.distance.value < 15000 ? window.push.costPerKmShort : window.push.costPerKmLong;
-
-              var _distance = row.distance.value / 1000 * costPerDistance;
-
-              _this.parcel.price = basePrice + _distance;
-              _this.parcel.distance = row.distance.value;
+            if (row[0].status === 'OK') {
+              resolve(row);
             } else if (row.status === 'NOT_FOUND') {
-              swal('Oops!', 'we couldn\'t determine distance, please check the addresses and try again', 'error');
-              _this.isValid = false;
+              reject({
+                error: 'Address Not Found'
+              });
             }
           } else {
-            swal('Oops!', 'we couldn\'t determine distance, please check the addresses and try again', 'error');
+            reject({
+              error: 'Distance cannot be determined!'
+            });
           }
         });
-      }
+      });
     }
   },
   mounted: function mounted() {
@@ -2299,15 +2309,11 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     if (this.getParameterByName('sender')) {
-      this.parcel.sender = {
-        address: this.getParameterByName('sender')
-      };
+      this.senderAddress = this.getParameterByName('sender');
     }
 
     if (this.getParameterByName('receiver')) {
-      this.parcel.receiver = {
-        address: this.getParameterByName('receiver')
-      };
+      this.receiverAddress = this.getParameterByName('receiver');
     }
 
     if (this.getParameterByName('cost')) {
@@ -2324,10 +2330,19 @@ __webpack_require__.r(__webpack_exports__);
         country: 'NG'
       }
     },
+        _this = this,
         from_address = document.getElementById('estimate_from_address'),
         to_address = document.getElementById('estimate_to_address'),
-        from_autocomplete = new google.maps.places.Autocomplete(from_address, options),
-        to_autocomplete = new google.maps.places.Autocomplete(to_address, options);
+        from_autocomplete = new google.maps.places.Autocomplete(this.$refs.from_address, options),
+        to_autocomplete = new google.maps.places.Autocomplete(this.$refs.to_address, options); // set the address
+
+
+    from_autocomplete.addListener('place_changed', function () {
+      _this.senderAddress = from_autocomplete.getPlace().formatted_address; // _this.getDistanceEstimate();
+    });
+    to_autocomplete.addListener('place_changed', function () {
+      _this.receiverAddress = to_autocomplete.getPlace().formatted_address; // _this.getDistanceEstimate();
+    });
   }
 });
 
@@ -39411,12 +39426,7 @@ var render = function() {
     _c(
       "form",
       {
-        attrs: {
-          action: "#",
-          method: "post",
-          id: "request-form",
-          autocomplete: "false"
-        },
+        attrs: { action: "#", method: "post", id: "request-form" },
         on: { change: _vm.checkDetailFields }
       },
       [
@@ -39441,6 +39451,7 @@ var render = function() {
                 }
               ],
               staticClass: "input",
+              class: { "is-danger": _vm.formatErrorField("sender_fullname") },
               attrs: {
                 id: "fullname",
                 type: "text",
@@ -39534,24 +39545,24 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.parcel.sender.address,
-                  expression: "parcel.sender.address"
+                  value: _vm.senderAddress,
+                  expression: "senderAddress"
                 }
               ],
-              staticClass: "input",
+              ref: "from_address",
+              staticClass: "input address-field",
               attrs: {
                 type: "text",
-                placeholder: "",
-                id: "estimate_from_address",
-                autocomplete: "anyrandomstring"
+                placeholder: "Start typing address...",
+                id: "estimate_from_address"
               },
-              domProps: { value: _vm.parcel.sender.address },
+              domProps: { value: _vm.senderAddress },
               on: {
                 input: function($event) {
                   if ($event.target.composing) {
                     return
                   }
-                  _vm.$set(_vm.parcel.sender, "address", $event.target.value)
+                  _vm.senderAddress = $event.target.value
                 }
               }
             })
@@ -39633,23 +39644,25 @@ var render = function() {
                 {
                   name: "model",
                   rawName: "v-model",
-                  value: _vm.parcel.receiver.address,
-                  expression: "parcel.receiver.address"
+                  value: _vm.receiverAddress,
+                  expression: "receiverAddress"
                 }
               ],
-              staticClass: "input",
+              ref: "to_address",
+              staticClass: "input address-field",
               attrs: {
                 autocomplete: "anyrandomstring",
                 type: "text",
-                id: "estimate_to_address"
+                id: "estimate_to_address",
+                placeholder: "Start typing address..."
               },
-              domProps: { value: _vm.parcel.receiver.address },
+              domProps: { value: _vm.receiverAddress },
               on: {
                 input: function($event) {
                   if ($event.target.composing) {
                     return
                   }
-                  _vm.$set(_vm.parcel.receiver, "address", $event.target.value)
+                  _vm.receiverAddress = $event.target.value
                 }
               }
             })
@@ -39752,47 +39765,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "div",
-          { staticClass: "field payment_type" },
-          [
-            _c("h3", { staticClass: "title is-5" }, [
-              _vm._v("How will you like to pay?")
-            ]),
-            _vm._v(" "),
-            _vm._l(_vm.parcel.paymentType, function(item) {
-              return _c("label", [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.parcel.payment_type,
-                      expression: "parcel.payment_type"
-                    }
-                  ],
-                  attrs: { type: "radio", id: "" },
-                  domProps: {
-                    value: item[0],
-                    checked: _vm._q(_vm.parcel.payment_type, item[0])
-                  },
-                  on: {
-                    change: function($event) {
-                      return _vm.$set(_vm.parcel, "payment_type", item[0])
-                    }
-                  }
-                }),
-                _vm._v(" " + _vm._s(item[1]) + "\n            ")
-              ])
-            })
-          ],
-          2
-        ),
-        _vm._v(" "),
-        _c("br"),
-        _c("br"),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "field box", staticStyle: { "margin-bottom": "2em" } },
+          { staticClass: "field box", attrs: { id: "parcel-estimate" } },
           [
             _c("div", { staticClass: "level is-mobile" }, [
               _c("div", { staticClass: "level-item" }, [
@@ -39836,7 +39809,7 @@ var render = function() {
                 }
               }
             },
-            [_vm._v("Make request")]
+            [_c("span", [_vm._v("Proceed")]), _vm._v(" "), _vm._m(1)]
           )
         ])
       ],
@@ -39845,7 +39818,7 @@ var render = function() {
     _vm._v(" "),
     _c("hr"),
     _vm._v(" "),
-    _vm._m(1)
+    _vm._m(2)
   ])
 }
 var staticRenderFns = [
@@ -39855,6 +39828,14 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "field" }, [
       _c("h3", { staticClass: "title is-5" }, [_vm._v("Package items")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("span", { staticClass: "icon" }, [
+      _c("i", { staticClass: "fas fa-arrow-right" })
     ])
   },
   function() {
@@ -52980,9 +52961,9 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 window.Vuex = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 window.google = google;
 window.swal = __webpack_require__(/*! sweetalert */ "./node_modules/sweetalert/dist/sweetalert.min.js");
-window.PaystackPop = PaystackPop;
 window.Cleave = __webpack_require__(/*! cleave.js */ "./node_modules/cleave.js/dist/cleave.js");
 window.cleavephone = __webpack_require__(/*! cleave.js/dist/addons/cleave-phone.ng */ "./node_modules/cleave.js/dist/addons/cleave-phone.ng.js");
+window._ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -53023,29 +53004,26 @@ var app = new Vue({
 if ($('#get-estimate').length > 0) {
   var getDistance = function getDistance(origin, destination) {
     return new Promise(function (resolve, reject) {
-      var googleDistance = new google.maps.DistanceMatrixService();
-      var distance = googleDistance.getDistanceMatrix({
+      var distanceMatrix = new google.maps.DistanceMatrixService();
+      var distance = distanceMatrix.getDistanceMatrix({
         origins: [origin],
-        destinations: [destination],
+        destinations: [destination, window.push.officeAddress],
         unitSystem: google.maps.UnitSystem.METRIC,
         travelMode: 'DRIVING'
       }, function (results, status) {
         if (status === 'OK') {
-          var row = results.rows[0].elements[0];
+          var row = results.rows[0].elements; // console.log(results);
 
-          if (row.status === 'OK') {
-            resolve({
-              status: true,
-              result: row
-            });
+          if (row[0].status === 'OK') {
+            resolve(row);
           } else if (row.status === 'NOT_FOUND') {
             reject({
-              status: false
+              error: 'Address Not Found'
             });
           }
         } else {
           reject({
-            status: false
+            error: 'Distance cannot be determined!'
           });
         }
       });
@@ -53096,14 +53074,13 @@ if ($('#get-estimate').length > 0) {
     var distance = getDistance(from_address.value, to_address.value);
     distance.then(function (result) {
       swal.close();
-      var distance = result.result.distance;
-      var m = Math.ceil(distance.value / 1000),
-          basePrice = window.push.basePrice,
-          perKM = m > 15 ? window.push.costPerKmLong : window.push.costPerKmShort,
-          cost = perKM * m + basePrice; // console.log(cost, basePrice, perKM, distance.value);
-
+      var deliveryDistance = Math.ceil(result[0].distance.value / 1000),
+          pickupDistance = Math.ceil(result[1].distance.value / 1000),
+          deliveryCost = deliveryDistance > 15 ? deliveryDistance * window.push.costPerKmLong + window.push.basePrice : deliveryDistance * window.push.costPerKmShort + window.push.basePrice,
+          pickupCost = pickupDistance * window.push.pickupCostPerKM,
+          totalCost = deliveryCost + pickupCost;
       swal({
-        title: '₦' + cost.toLocaleString('en-GB'),
+        title: '₦' + totalCost.toLocaleString('en-GB'),
         text: "To deliver your package from ".concat(from_address.value, " to ").concat(to_address.value),
         closeOnEsc: false,
         closeOnClickOutside: false,
@@ -53122,7 +53099,7 @@ if ($('#get-estimate').length > 0) {
         }
       }).then(function (confirm) {
         if (confirm) {
-          window.location.href = "/request-pickup/?sender=".concat(from_address.value, "&receiver=").concat(to_address.value, "&cost=").concat(cost, "&distance=").concat(distance.value);
+          window.location.href = "/request-pickup/?sender=".concat(from_address.value, "&receiver=").concat(to_address.value, "&cost=").concat(totalCost, "&distance=").concat(deliveryDistance);
         }
       });
     }).catch(function (error) {

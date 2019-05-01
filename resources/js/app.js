@@ -11,9 +11,9 @@ window.Vue = require('vue');
 window.Vuex = require('vuex');
 window.google = google;
 window.swal = require('sweetalert');
-window.PaystackPop = PaystackPop;
 window.Cleave = require("cleave.js");
 window.cleavephone = require("cleave.js/dist/addons/cleave-phone.ng");
+window._ = require("lodash");
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -97,16 +97,18 @@ if ( $('#get-estimate').length > 0 ){
             closeOnEsc: false,
         });
         let distance = getDistance(from_address.value, to_address.value);
+
+
         distance.then( result => {
             swal.close();
-            let distance = result.result.distance;
-            let m = Math.ceil(distance.value / 1000),
-                basePrice = window.push.basePrice,
-                perKM = ( m > 15 ) ? window.push.costPerKmLong : window.push.costPerKmShort,
-                cost = perKM * m +  basePrice;
-                // console.log(cost, basePrice, perKM, distance.value);
+            let deliveryDistance = Math.ceil(result[0].distance.value / 1000),
+                pickupDistance = Math.ceil(result[1].distance.value / 1000 ),
+                deliveryCost = ( deliveryDistance > 15 ) ? (deliveryDistance * window.push.costPerKmLong) + window.push.basePrice : (deliveryDistance * window.push.costPerKmShort) + window.push.basePrice,
+                pickupCost = pickupDistance * window.push.pickupCostPerKM,
+                totalCost = deliveryCost + pickupCost;
+
             swal({
-                title: '₦' + cost.toLocaleString('en-GB'),
+                title: '₦' + totalCost.toLocaleString('en-GB'),
                 text: `To deliver your package from ${from_address.value} to ${to_address.value}`,
                 closeOnEsc: false,
                 closeOnClickOutside: false,
@@ -125,37 +127,39 @@ if ( $('#get-estimate').length > 0 ){
                 }
             }).then( confirm => {
                 if ( confirm ){
-                    window.location.href = `/request-pickup/?sender=${from_address.value}&receiver=${to_address.value}&cost=${cost}&distance=${distance.value}`;
+                    window.location.href = `/request-pickup/?sender=${from_address.value}&receiver=${to_address.value}&cost=${totalCost}&distance=${deliveryDistance}`;
                 }
             });
         }).catch( error => {
             console.log(error);
         });
 
+
+
     });
 
     function getDistance(origin, destination){
         return new Promise( (resolve, reject) => {
-            let googleDistance = new google.maps.DistanceMatrixService();
-            let distance = googleDistance.getDistanceMatrix({
+            let distanceMatrix = new google.maps.DistanceMatrixService();
+            let distance = distanceMatrix.getDistanceMatrix({
                 origins: [origin],
-                destinations: [destination],
+                destinations: [destination, window.push.officeAddress],
                 unitSystem: google.maps.UnitSystem.METRIC,
                 travelMode: 'DRIVING',
              }, function(results, status){
                  if ( status === 'OK' ){
-                     let row = results.rows[0].elements[0];
-                     if ( row.status === 'OK' ){
-                         resolve( { status: true, result: row } );
+                     let row = results.rows[0].elements;
+                     // console.log(results);
+                     if ( row[0].status === 'OK' ){
+                         resolve(row);
                      } else if ( row.status === 'NOT_FOUND' ) {
-                         reject( { status: false } );
+                         reject({ error: 'Address Not Found' });
                      }
                  } else {
-                     reject( { status: false } );
+                     reject({ error: 'Distance cannot be determined!' });
                  }
             });
-        })
-
+        } )
     }
 }
 

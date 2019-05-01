@@ -33,7 +33,6 @@ class ParcelRequest extends FormRequest
             'receiver_address' => 'required',
             'price'            => 'required',
             'distance'         => 'required',
-            'payment_type'     => 'required',
         ];
     }
 }

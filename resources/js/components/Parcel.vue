@@ -4,13 +4,13 @@
         <ul class="errors" v-if="errors.length > 0">
             <li v-for="error in errors">{{ error.message }}</li>
         </ul>
-        <form action="#" method="post" id="request-form" @change="checkDetailFields" autocomplete="false">
+        <form action="#" method="post" id="request-form" @change="checkDetailFields">
         <input type="hidden" style="display:none" autocomplete="false">
         <h3 class="title is-5">Senders details</h3>
             <div class="field is-grouped">
                 <p class="control is-expanded">
                     <label for="fullname">Fullname</label>
-                    <input id="fullname" type="text" v-model="parcel.sender.fullname" placeholder="John Olawale" class="input">
+                    <input id="fullname" type="text" v-model="parcel.sender.fullname" placeholder="John Olawale" class="input" :class="{ 'is-danger' : formatErrorField('sender_fullname') }">
                 </p>
                 <p class="control is-expanded">
                     <label for="s-email">Email address</label>
@@ -25,7 +25,7 @@
             <div class="field is-grouped">
                 <p class="control is-expanded">
                     <label for="estimate_from_address">Address</label>
-                    <input type="text" v-model="parcel.sender.address" placeholder="" class="input" id="estimate_from_address" autocomplete="anyrandomstring">
+                    <input type="text" v-model="senderAddress" placeholder="Start typing address..." class="input address-field" id="estimate_from_address" ref="from_address">
                 </p>
             </div>
 
@@ -48,7 +48,7 @@
             <div class="field is-grouped">
                 <p class="control is-expanded">
                     <label for="estimate_to_address">Delivery address</label>
-                    <input autocomplete="anyrandomstring" type="text" v-model="parcel.receiver.address" class="input" id="estimate_to_address">
+                    <input autocomplete="anyrandomstring" type="text" v-model="receiverAddress" class="input address-field" id="estimate_to_address" ref="to_address" placeholder="Start typing address...">
                 </p>
 
             </div>
@@ -77,21 +77,15 @@
             </div>
             <hr>
 
-            <div class="field payment_type">
+            <!-- <div class="field payment_type">
                 <h3 class="title is-5">How will you like to pay?</h3>
-                <!-- <div class="select">
-                    <select v-model="parcel.payment_type">
-                        <option value="0">Select</option>
-                        <option v-for="item in parcel.paymentType" :value="item[0]">{{ item[1] }}</option>
-                    </select>
-                </div> -->
                 <label v-for="item in parcel.paymentType">
                     <input type="radio" :value="item[0]" v-model="parcel.payment_type" id=""> {{ item[1] }}
                 </label>
             </div>
-            <br><br>
+            <br><br> -->
 
-            <div class="field box" style="margin-bottom: 2em">
+            <div class="field box" id="parcel-estimate">
                 <div class="level is-mobile">
                     <div class="level-item">
                         <div class="has-text-centered">
@@ -110,7 +104,7 @@
             </div>
 
             <div class="field">
-                <button class="button is-action is-medium" :class="{ 'is-loading' : isLoading }" @click.prevent="submitParcelRequest" :disabled="!isValid">Make request</button>
+                <button class="button is-action is-medium" :class="{ 'is-loading' : isLoading }" @click.prevent="submitParcelRequest" :disabled="!isValid"><span>Proceed</span> <span class="icon"><i class="fas fa-arrow-right"></i></span></button>
             </div>
         </form>
         <hr>
@@ -146,12 +140,16 @@
                     distance: 0,
                     payment_type: null,
                 },
-                isValid: false,
+                senderAddress: '',
+                receiverAddress: '',
+                isValid: true,
                 loggedUser: ( this.user !== null ) ? JSON.parse(this.user) : null,
                 geocoder: new google.maps.Geocoder(),
                 distance: new google.maps.DistanceMatrixService(),
                 errors: [],
                 isLoading: false,
+                distanceCost: null,
+                pickupCost: null,
             }
         },
         computed: {
@@ -159,11 +157,22 @@
                 return ( this.parcel.price !== 0 ) ? parseInt(Math.round(this.parcel.price)).toLocaleString() : "0";
             },
             computedDistance(){
-                return ( this.parcel.distance !== 0 ) ? Math.round(this.parcel.distance / 1000) + 'km' : "0km";
+                return ( this.parcel.distance !== 0 ) ? this.parcel.distance + 'km' : "0km";
             },
         },
         props: {
             user: null,
+        },
+        watch: {
+            senderAddress: function() {
+                this.debounceGetDistance();
+            },
+            receiverAddress: function() {
+                this.debounceGetDistance();
+            },
+        },
+        created: function(){
+            this.debounceGetDistance = _.debounce(this.getDistanceEstimate, 1000);
         },
         methods: {
             getParameterByName(name, url) {
@@ -175,9 +184,29 @@
                 if (!results[2]) return '';
                 return decodeURIComponent(results[2].replace(/\+/g, ' '));
             },
+            formatErrorField(name){
+                return ( this.errors.indexOf(name) !== -1 ) ? true : false;
+            },
             submitParcelRequest(){
                 let _this = this;
                 _this.errors = [];
+
+                // Validate fullname
+                if ( !_this.parcel.sender.fullname ){
+                    _this.errors.push({ key: 'sender_fullname', message: 'Please provide the senders fullname' });
+                }
+
+                if ( !_this.parcel.receiver.fullname ){
+                    _this.errors.push({ key: 'receiver_fullname', message: 'Please provide the receivers fullname' });
+                }
+
+                if ( !_this.parcel.receiver.phone ){
+                    _this.errors.push({ key: 'receiver_phone', message: 'Please provide the receivers phone number' });
+                }
+
+                if ( !_this.parcel.sender.phone ){
+                    _this.errors.push({ key: 'sender_phone', message: 'Please provide the senders phone number' });
+                }
 
                 // validate email addresses
                 if ( !this.validEmail(_this.parcel.sender.email)  ){
@@ -191,23 +220,13 @@
                     }
                 }
 
-                // Validate payment method
-                if ( _this.parcel.payment_type === null || _this.parcel.payment_type == 0 ){
-                    _this.errors.push({ key: 'pt', message: 'Please select an appropraite payment type' });
-                }
-
                 // Validate price
                 if ( _this.parcel.price === 0 ){
-                    _this.errors.push({ key: 'price', message: 'We are unable to process your request because we cannot determine your estimated fare. Please check your address field and correct any mistakes there.' })
-                }
-
-                // Validate distance
-                if ( _this.parcel.distance === 0 ){
-                    _this.errors.push({ key: 'distance', message: 'We are unable to process your request because we cannot determine your estimated distance. This helps us calculate your estimated fare. Please check your address fields for any errors' });
+                    _this.errors.push({ key: 'price', message: 'We are unable to process your request because we cannot determine your fare. Please check your address fields for errors or call us on ' + window.push.contactNumber + ' to make your request.'  })
                 }
 
                 if ( _this.errors.length > 0 ){
-                    alert("Please check for errors");
+                    swal({ text: "Please check the form for errors", title: "Errors Found!", icon: 'error' });
                     return;
                 }
 
@@ -218,58 +237,26 @@
                     sender_fullname: _this.parcel.sender.fullname,
                     sender_email: _this.parcel.sender.email,
                     sender_phone: _this.parcel.sender.phone,
-                    sender_address: _this.parcel.sender.address,
+                    sender_address: _this.senderAddress,
                     receiver_fullname: _this.parcel.receiver.fullname,
                     receiver_phone: _this.parcel.receiver.phone,
-                    receiver_address: _this.parcel.receiver.address,
+                    receiver_address: _this.receiverAddress,
                     price: _this.parcel.price,
                     distance: _this.parcel.distance,
                     items: _this.parcel.parcelitems,
-                    payment_type: _this.parcel.payment_type,
                 };
 
                 // Post data to server
                 axios.post('/app/parcel', data).then( response => {
                     _this.isLoading = false;
                     let payload = response.data;
-
-                    if ( payload.payment_type === "online" ){
-                        let amount = Math.floor(payload.parcel.price) * 100;
-                        let paystack = PaystackPop.setup({
-                            key: 'pk_test_4dfe0155f15b8fd873e52b04bffc5537993488c7',
-                            email: payload.parcel.sender_email,
-                            amount: amount,
-                            currency: "NGN",
-                            callback: (response) => {
-                                if ( response.status === 'success' ){
-                                    axios.post('/request-pickup/'+payload.parcel.uuid+'/payment', response).then( (response) => {
-                                        swal({
-                                            title: 'Success',
-                                            text: 'Your payment was made successfully. You will be redirected in 3seconds',
-                                            icon: 'success',
-                                            closeOnClickOutside: false,
-                                            closeOnEsc: false,
-                                            buttons: false,
-                                        });
-                                        setTimeout(()=>{
-                                            window.location.href = '/thank-you/' + payload.parcel.uuid;
-                                        }, 3000);
-                                    }).catch( (error) => {
-                                        console.log(error);
-                                    });
-                                }
-                                _this.isLoading = false;
-                            },
-                            onClose: () => {
-                                // PayStack window closed
-                                _this.isLoading = false;
-                            }
-                        });
-                        paystack.openIframe();
-                    }
+                    // $('body').removeClass('is-loading');
+                    window.location.href = '/app/parcel/' + payload.parcel.uuid + '/checkout';
+                    return;
 
                 } ).catch( e => {
                     console.log('An error occured', e);
+                    $('body').removeClass('is-loading');
                     _this.isLoading = false;
                 });
 
@@ -299,36 +286,51 @@
             },
 
             checkDetailFields(){
-                if ( this.parcel.sender.fullname &&  this.parcel.sender.email && this.parcel.sender.phone && this.parcel.sender.address && this.parcel.receiver.fullname && this.parcel.receiver.phone && this.parcel.receiver.address ){
-                    let _this = this;
-                    let data = {
-                        senderAddress: this.parcel.sender.address,
-                        receiverAddress: this.parcel.receiver.address
-                    };
-                    _this.isValid = true;
-                    let distance = this.distance.getDistanceMatrix({
-                        origins: [data.senderAddress],
-                        destinations: [data.receiverAddress],
+                if ( this.parcel.sender.fullname &&  this.parcel.sender.email && this.parcel.sender.phone && this.senderAddress && this.parcel.receiver.fullname && this.parcel.receiver.phone && this.receiverAddress ){
+                    this.isValid = true;
+                } else {
+                    this.isValid = false;
+                }
+            },
+
+            getDistanceEstimate(){
+                let _this = this;
+                if ( _this.senderAddress && _this.receiverAddress ){
+                    let distance = _this.getDistance(_this.senderAddress, _this.receiverAddress).then( result => {
+                        let deliveryDistance = Math.ceil(result[0].distance.value / 1000),
+                            pickupDistance = Math.ceil(result[1].distance.value / 1000 ),
+                            deliveryCost = ( deliveryDistance > 15 ) ? (deliveryDistance * window.push.costPerKmLong) + window.push.basePrice : (deliveryDistance * window.push.costPerKmShort) + window.push.basePrice,
+                            pickupCost = pickupDistance * window.push.pickupCostPerKM,
+                            totalCost = deliveryCost + pickupCost;
+
+                        _this.parcel.price = totalCost;
+                        _this.parcel.distance = deliveryDistance;
+                    });
+                }
+            },
+
+            getDistance(origin, destination){
+                let _this = this;
+                return new Promise( (resolve, reject) => {
+                    let distance = _this.distance.getDistanceMatrix({
+                        origins: [origin],
+                        destinations: [destination, window.push.officeAddress],
                         unitSystem: google.maps.UnitSystem.METRIC,
                         travelMode: 'DRIVING',
                      }, function(results, status){
                          if ( status === 'OK' ){
-                             let row = results.rows[0].elements[0];
-                             if ( row.status === 'OK' ){
-                                 const basePrice = window.push.basePrice;
-                                 const costPerDistance = ( row.distance.value < 15000 ) ? window.push.costPerKmShort : window.push.costPerKmLong;
-                                 const distance = (row.distance.value / 1000) * costPerDistance;
-                                 _this.parcel.price = basePrice + distance;
-                                 _this.parcel.distance = row.distance.value;
+                             let row = results.rows[0].elements;
+                             // console.log(results);
+                             if ( row[0].status === 'OK' ){
+                                 resolve(row);
                              } else if ( row.status === 'NOT_FOUND' ) {
-                                 swal('Oops!', 'we couldn\'t determine distance, please check the addresses and try again', 'error');
-                                 _this.isValid = false;
+                                 reject({ error: 'Address Not Found' });
                              }
                          } else {
-                             swal('Oops!', 'we couldn\'t determine distance, please check the addresses and try again', 'error');
+                             reject({ error: 'Distance cannot be determined!' });
                          }
                     });
-                }
+                } )
             },
         },
         mounted() {
@@ -344,14 +346,10 @@
                 this.getUserProfile(this.loggedUser.id);
             }
             if ( this.getParameterByName('sender') ){
-                this.parcel.sender = {
-                    address: this.getParameterByName('sender'),
-                }
+                    this.senderAddress = this.getParameterByName('sender');
             }
             if ( this.getParameterByName('receiver') ){
-                this.parcel.receiver = {
-                    address: this.getParameterByName('receiver'),
-                }
+                this.receiverAddress = this.getParameterByName('receiver');
             }
             if ( this.getParameterByName('cost') ){
                 this.parcel.price = this.getParameterByName('cost');
@@ -364,10 +362,20 @@
                     types: ['address'],
                     componentRestrictions: { country: 'NG' }
                 },
+                _this = this,
                 from_address = document.getElementById('estimate_from_address'),
                 to_address = document.getElementById('estimate_to_address'),
-                from_autocomplete = new google.maps.places.Autocomplete(from_address, options),
-                to_autocomplete = new google.maps.places.Autocomplete(to_address, options);
+                from_autocomplete = new google.maps.places.Autocomplete(this.$refs.from_address, options),
+                to_autocomplete = new google.maps.places.Autocomplete(this.$refs.to_address, options);
+                // set the address
+                from_autocomplete.addListener( 'place_changed', () => {
+                    _this.senderAddress = from_autocomplete.getPlace().formatted_address;
+                    // _this.getDistanceEstimate();
+                });
+                to_autocomplete.addListener( 'place_changed', () => {
+                    _this.receiverAddress = to_autocomplete.getPlace().formatted_address;
+                    // _this.getDistanceEstimate();
+                });
         }
     }
 </script>

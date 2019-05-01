@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('index');
 
 Auth::routes();
 Auth::routes(['verify' => true]);
@@ -49,7 +49,7 @@ Route::get('/about-us', function(){
 // Request pickup
 Route::match(['get', 'post'], '/request-pickup', 'ParcelController@requestPickup')->name('request_pickup');
 Route::post('/request-pickup/{parcel}/payment', 'ParcelController@payment');
-Route::get('/thank-you/{parcel}', 'ParcelController@thank_you');
+Route::get('/thank-you/{parcel}', 'ParcelController@thank_you')->name('thank_you');
 
 Route::group(['prefix'=>'app'], function(){
 
@@ -61,6 +61,8 @@ Route::group(['prefix'=>'app'], function(){
         Route::get('/', 'ParcelController@parcel')->name('parcel');
         Route::post('/', 'ParcelController@submit')->name('submit_parcel');
         Route::get('/{parcel}/details', 'ParcelController@details')->name('parcel_details');
+        Route::match(['get', 'post', 'put'], '/{parcel}/checkout', 'ParcelController@checkout')->name('parcel_checkout');
+        Route::match(['get'], '/paystack/callback', 'ParcelController@paystackCallback');
     });
 
     Route::group([ 'prefix' => 'riders', 'middleware' => ['auth', 'is_admin'] ], function(){

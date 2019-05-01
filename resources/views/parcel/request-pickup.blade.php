@@ -5,7 +5,9 @@
 
 <div class="section is-medium">
     <div class="container is-740">
-        <h2 class="title is-2 is-size-4-mobile">New pickup &amp; delivery request</h2>
+        <h2 class="title is-2 is-size-4-mobile">Request Pickup</h2>
+        <p>Please <a href="{{ route('service_areas') }}" class="has-text-weight-bold" target="_blank">check our service areas</a> to be sure we can pickup your parcel before making your request.</p>
+        <hr>
         <parcel :user="null"></parcel>
     </div>
 </div>
