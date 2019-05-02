@@ -27,7 +27,8 @@ Route::get('/contact-us', function(){
 })->name('contact');
 
 Route::get('/careers', function(){
-    return view('page.careers');
+    $careers = App\Models\Career::where('status', 'publish')->get();
+    return view('page.careers')->with(['careers'=>$careers]);
 })->name('careers');
 
 Route::get('/privacy-policy', function(){
@@ -50,6 +51,11 @@ Route::get('/about-us', function(){
 Route::match(['get', 'post'], '/request-pickup', 'ParcelController@requestPickup')->name('request_pickup');
 Route::post('/request-pickup/{parcel}/payment', 'ParcelController@payment');
 Route::get('/thank-you/{parcel}', 'ParcelController@thank_you')->name('thank_you');
+
+Route::group(['prefix'=>'careers'], function(){
+    Route::match(['get', 'post'], '/add', 'CareerController@add')->name('add_career')->middleware('auth');
+    Route::get('/{career}', 'CareerController@view')->name('view_career');
+});
 
 Route::group(['prefix'=>'app'], function(){
 

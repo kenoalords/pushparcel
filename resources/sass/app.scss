@@ -501,6 +501,24 @@ div{
     }
 }
 
+.career{
+    margin-bottom: 2em;
+    .title{
+        a{
+            color: #111;
+            &:hover{
+                color: #3273dc;
+            }
+        }
+    }
+}
+
+.career-form{
+    .field{
+        margin-bottom: 1em;
+    }
+}
+
 .checkout-form{
     .field{
         label{

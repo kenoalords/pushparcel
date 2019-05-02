@@ -66,6 +66,14 @@ if ( $('#get-estimate').length > 0 ){
         from_autocomplete = new google.maps.places.Autocomplete(from_address, options),
         to_autocomplete = new google.maps.places.Autocomplete(to_address, options);
 
+        from_autocomplete.addListener('place_changed', ()=>{
+            from_address.value = from_autocomplete.getPlace().formatted_address;
+        });
+
+        to_autocomplete.addListener('place_changed', ()=>{
+            to_address.value = to_autocomplete.getPlace().formatted_address;
+        });
+
     $('body').on('submit', '#get-estimate', e => {
         e.preventDefault();
 

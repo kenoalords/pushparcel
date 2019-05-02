@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ParcelRequest;
 use App\Notifications\SmsNotification;
 use GuzzleHttp;
+use App\Mail\ParcelRequestMail;
+use Mail;
 
 class ParcelController extends Controller
 {
@@ -76,6 +78,7 @@ class ParcelController extends Controller
                 $phone = preg_replace("/\s/", '', $request->sender_phone);
                 $phone_number = preg_replace("/^0/", '+234', $phone);
                 $message = "Hello {$request->sender_name}, Thank you for requesting our dispatch service. We will get in touch with you shortly";
+                Mail::to($request->sender_email)->send(new ParcelRequestMail($save_request));
                 // $save_request->notify(new SmsNotification($phone_number, $message));
                 return response()->json([ 'parcel' => $save_request, 'payment_type' => $save_request->payment_type ], 200);
             }

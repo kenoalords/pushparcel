@@ -9600,6 +9600,20 @@ div.is-loading:before {
   font-weight: 700;
 }
 
+.career {
+  margin-bottom: 2em;
+}
+.career .title a {
+  color: #111;
+}
+.career .title a:hover {
+  color: #3273dc;
+}
+
+.career-form .field {
+  margin-bottom: 1em;
+}
+
 .checkout-form .field label {
   font-weight: bold;
   display: inline-block;

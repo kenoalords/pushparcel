@@ -18,9 +18,9 @@ return [
     'contact_number'    => '08090923436',
     'contact_email'    => 'hello@pushparcel.com',
     'social'    => [
-        'facebook'  => 'https://facebook.com',
-        'twitter'  => 'https://twitter.com',
-        'instagram'  => 'https://instagram.com',
+        'facebook'  => 'https://fb.me/pushparcel',
+        'twitter'  => 'https://twitter.com/PushParcel',
+        'instagram'  => 'https://instagram.com/pushparcel',
     ],
     'office_address'    => '15 Afariogun street, Ikeja, Lagos',
     'google_maps_key'   => env('GOOGLE_MAPS_KEY'),

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Dashboard')
 @section('content')
 <div class="section is-medium">
     <div class="container">
@@ -25,7 +25,7 @@
                         <div class="col is-1">Date</div>
                         <div class="col is-3">Sender</div>
                         <div class="col is-3">Receiver</div>
-                        <div class="col is-2">Dispatcher</div>
+                        <div class="col is-2">Payment Type</div>
                         <div class="col is-1">Status</div>
                     </div>
                     <div class="grid-content">
@@ -35,7 +35,7 @@
                                 <div class="col is-1">{{ $parcel->created_at->format('d M, y') }}</div>
                                 <div class="col is-3">
                                     <h4 class="title is-6">
-                                        <a href="{{ route('parcel_details', ['parcel'=>$parcel->id]) }}">{{ $parcel->user->profile->fullname() }}</a>
+                                        <a href="{{ route('parcel_details', ['parcel'=>$parcel]) }}">{{ $parcel->sender_name }}</a>
                                     </h4>
                                     <span class="address">{{ $parcel->sender_address }}</span>
                                 </div>
@@ -43,7 +43,7 @@
                                     <h4 class="title is-6">{{ $parcel->receiver_name }}</h4>
                                     <span class="address">{{ $parcel->receiver_address }}</span>
                                 </div>
-                                <div class="col is-2">Dispatcher</div>
+                                <div class="col is-2">{{ ($parcel->payment_type == 'online') ? 'Online' : 'Pickup' }}</div>
                                 <div class="col is-1">{{ $parcel->status }}</div>
                             </div>
                         @endforeach

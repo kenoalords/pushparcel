@@ -53040,6 +53040,12 @@ if ($('#get-estimate').length > 0) {
       to_address = document.getElementById('estimate_to_address'),
       from_autocomplete = new google.maps.places.Autocomplete(from_address, options),
       to_autocomplete = new google.maps.places.Autocomplete(to_address, options);
+  from_autocomplete.addListener('place_changed', function () {
+    from_address.value = from_autocomplete.getPlace().formatted_address;
+  });
+  to_autocomplete.addListener('place_changed', function () {
+    to_address.value = to_autocomplete.getPlace().formatted_address;
+  });
   $('body').on('submit', '#get-estimate', function (e) {
     e.preventDefault();
 

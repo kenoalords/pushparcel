@@ -17,6 +17,7 @@
                     <a href="{{ route('home') }}" class="navbar-link">Dashboard</a>
                     <div class="navbar-dropdown">
                         @if( auth()->user()->is_admin === 1 )
+                        <a href="{{ route('add_career') }}" class="navbar-item">Add Career</a>
                             <a href="{{ route('bikes') }}" class="navbar-item">Bikes</a>
                             <a href="{{ route('bikers') }}" class="navbar-item">Riders</a>
                         @endif
@@ -28,6 +29,7 @@
                 @else
                 <a href="{{ url('/') }}" class="navbar-item {{ (Request::path() === '/') ? 'is-active' : '' }}">Home</a>
                 <a href="{{ route('about') }}" class="navbar-item {{ (Request::path() === 'about-us') ? 'is-active' : '' }}">About</a>
+                <a href="{{ route('careers') }}" class="navbar-item {{ (Request::path() === 'careers') ? 'is-active' : '' }}">Careers</a>
                 <a href="{{ route('get_estimate') }}" class="navbar-item bold {{ (Request::path() === 'get-estimate') ? 'is-active' : '' }}">Get Estimate</a>
                 <a href="{{ route('contact') }}" class="navbar-item bold {{ (Request::path() === 'contact-us') ? 'is-active' : '' }}">Contact Us</a>
 

@@ -17,14 +17,14 @@
             <div class="column">
                 <h4 class="title is-5">Sender details</h4>
                 <p class="has-text-weight-bold">{{ $parcel->sender_name }}</p>
-                <p>{{ $parcel->senderAddress() }}</p>
+                <p>{{ $parcel->sender_address }}</p>
                 <p>{{ $parcel->sender_phone }}</p>
                 <p><a href="mailto:{{ $parcel->sender_email }}">{{ $parcel->sender_email }}</a></p>
             </div>
             <div class="column">
                 <h4 class="title is-5">Receiver details</h4>
                 <p class="has-text-weight-bold">{{ $parcel->receiver_name }}</p>
-                <p>{{ $parcel->receiverAddress() }}</p>
+                <p>{{ $parcel->receiver_address }}</p>
                 <p>{{ $parcel->receiver_phone }}</p>
                 <p><a href="mailto:{{ $parcel->receiver_email }}">{{ $parcel->receiver_email }}</a></p>
             </div>
