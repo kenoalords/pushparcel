@@ -90,13 +90,13 @@
                     <div class="level-item">
                         <div class="has-text-centered">
                             <div class="spaced-text">Estimated fare</div>
-                            <h2 class="title is-1 has-text-danger">₦{{ computedPrice }}</h2>
+                            <h2 class="title is-1 is-size-4-mobile has-text-danger">₦{{ computedPrice }}</h2>
                         </div>
                     </div>
                     <div class="level-item">
                         <div class="has-text-centered">
                             <div class="spaced-text">Distance</div>
-                            <h2 class="title is-1 has-text-danger">{{ computedDistance }}</h2>
+                            <h2 class="title is-1 is-size-4-mobile has-text-danger">{{ computedDistance }}</h2>
                         </div>
                     </div>
 

@@ -14,7 +14,7 @@ class AlterTableParcelsAddIsApproved extends Migration
     public function up()
     {
         Schema::table('parcels', function (Blueprint $table) {
-            $table->integer('is_approved_by')->unsigned();
+            $table->integer('is_approved_by')->unsigned()->nullable();
         });
     }
 
