@@ -306,6 +306,7 @@ h1, h2, h3, h4{
         .grid-list{
             display: flex;
             flex-direction: row;
+            align-items: center;
             border-bottom: 1px solid #ddd;
             &:last-of-type{
                 border: none;
@@ -317,6 +318,9 @@ h1, h2, h3, h4{
 
         .col{
             align-items: center;
+            .button{
+                padding: 5px 10px;
+            }
         }
     }
 }

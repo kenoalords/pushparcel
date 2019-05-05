@@ -69,6 +69,7 @@ Route::group(['prefix'=>'app'], function(){
         Route::get('/{parcel}/details', 'ParcelController@details')->name('parcel_details');
         Route::match(['get', 'post', 'put'], '/{parcel}/checkout', 'ParcelController@checkout')->name('parcel_checkout');
         Route::match(['get'], '/paystack/callback', 'ParcelController@paystackCallback');
+        Route::post('/{parcel}/paid', 'ParcelController@markAsPaid')->middleware(['auth'])->name('mark_paid');
     });
 
     Route::group([ 'prefix' => 'riders', 'middleware' => ['auth', 'is_admin'] ], function(){

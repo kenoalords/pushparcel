@@ -7,7 +7,7 @@
 
 <div class="section is-medium">
     <div class="container is-740">
-        <h1 class="title is-2 is-size-5-mobile">Careers</h1>
+        <h1 class="title is-2 is-size-4-mobile">Careers</h1>
         <p>Looking for career opportunities with PushParcel? Send your CV to <a href="mailto:{{ config('app.contact_email') }}">{{ config('app.contact_email') }}</a></p>
 
         @if($careers->count() > 0 )

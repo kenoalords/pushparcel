@@ -8,16 +8,17 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Models\Parcel;
 
-class ParcelRequestMail extends Mailable implements ShouldQueue
+class ParcelPaymentConfirmation extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    public $parcel;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public $parcel;
     public function __construct(Parcel $parcel)
     {
         $this->parcel = $parcel;
@@ -30,7 +31,7 @@ class ParcelRequestMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject("Your Parcel Pickup Request")
-                    ->markdown('mails.parcel.request');
+        return $this->subject("Payment Confirmation")
+                    ->markdown('mails.parcel.payment');
     }
 }

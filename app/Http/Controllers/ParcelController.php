@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Notifications\Notifiable;
+use Notification;
 use App\Models\Parcel;
 use Illuminate\Support\Str;
 use App\Models\ParcelItem;
@@ -12,7 +13,9 @@ use App\Http\Requests\ParcelRequest;
 use App\Notifications\SmsNotification;
 use GuzzleHttp;
 use App\Mail\ParcelRequestMail;
+use App\Mail\ParcelPaymentConfirmation;
 use Mail;
+use App\Notifications\ParcelRequestNotification;
 
 class ParcelController extends Controller
 {
@@ -79,7 +82,6 @@ class ParcelController extends Controller
                 $phone_number = preg_replace("/^0/", '+234', $phone);
                 $message = "Hello {$request->sender_name}, Thank you for requesting our dispatch service. We will get in touch with you shortly";
                 Mail::to($request->sender_email)->send(new ParcelRequestMail($save_request));
-                // $save_request->notify(new SmsNotification($phone_number, $message));
                 return response()->json([ 'parcel' => $save_request, 'payment_type' => $save_request->payment_type ], 200);
             }
 
@@ -88,8 +90,10 @@ class ParcelController extends Controller
 
     }
 
-    public function checkout(Request $request, Parcel $parcel)
+    public function checkout(Request $request, Parcel $parcel, User $user)
     {
+        $admins = User::where('is_admin', true)->get();
+        // dd($admins);
         if ( $request->isMethod('get') ){
             if ( $parcel->is_paid === 1 ){
                 return redirect()->route('thank_you', ['parcel'=>$parcel]);
@@ -120,9 +124,11 @@ class ParcelController extends Controller
                         $parcel->is_paid = true;
                         $parcel->payment_type = 'online';
                         $parcel->save();
+                        Mail::to($parcel->sender_email)->send(new ParcelPaymentConfirmation($parcel));
+                        Notification::send($admins, new ParcelRequestNotification($parcel));
                         return redirect()->route('thank_you', ['parcel'=>$parcel]);
                     } else {
-
+                        Notification::send($admins, new ParcelRequestNotification($parcel));
                         return redirect()->route('thank_you', ['parcel'=>$parcel]);
                     }
                 } else {
@@ -141,6 +147,7 @@ class ParcelController extends Controller
             if ( $request->payment_type === 'pop' ){
                 $parcel->payment_type = $request->payment_type;
                 $parcel->save();
+                Notification::send($admins, new ParcelRequestNotification($parcel, $parcel->payment_type));
                 return redirect()->route('thank_you', [$parcel]);
             }
 
@@ -209,5 +216,13 @@ class ParcelController extends Controller
         if ( $request->isMethod('get') ){
             return view('parcel.request-pickup');
         }
+    }
+
+    public function markAsPaid(Request $request, Parcel $parcel)
+    {
+        $parcel->is_paid = true;
+        $parcel->is_approved_by = $request->user()->id;
+        $parcel->save();
+        return response()->json(['status'=>true]);
     }
 }

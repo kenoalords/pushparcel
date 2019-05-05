@@ -1,9 +1,11 @@
 @component('mail::message')
-# Your parcel request is complete
-Hi {{ $parcel->sender_name }},
-Find your parcel request details below.
+# New Parcel Request
 
 ## Amount: N{{ number_format($parcel->price) }}
+## Payment Type: {{ $parcel->payment_type }}
+@if ( $saved === true )
+**Payment was made successfully but record not saved, please check record with ID: {{ $parcel->id }}**
+@endif
 @component('mail::table')
 | Sender details     | Receiver Details |
 | :----------------- | :---------------- |
@@ -20,14 +22,6 @@ Find your parcel request details below.
         @endforeach
     @endif
 @endcomponent
-
-For your convenience, you can make payment online via our secured online partner by clicking on the **Pay online now** button below.
-
-@component('mail::button', ['url' => route('parcel_checkout', ['parcel'=>$parcel])])
-Pay online now
-@endcomponent
-
-If you have any questions regarding your request, please call us now on {{ config('app.contact_number') }} or send us a mail {{ config('app.contact_email') }}
 
 Thanks,<br>
 ##{{ config('app.name') }}

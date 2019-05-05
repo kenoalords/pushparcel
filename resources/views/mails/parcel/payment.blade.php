@@ -1,9 +1,11 @@
 @component('mail::message')
-# Your parcel request is complete
-Hi {{ $parcel->sender_name }},
-Find your parcel request details below.
+# Thank you! Your payment have been confirmed.
+Hi {{ ucwords(strtolower($parcel->sender_name)) }},
 
-## Amount: N{{ number_format($parcel->price) }}
+Your parcel delivery request is complete and payment confirmed, please find your details below.
+
+## Transaction Reference: {{ strtoupper($parcel->payment->transaction_ref) }}
+## Amount: N{{ number_format($parcel->payment->amount) }}
 @component('mail::table')
 | Sender details     | Receiver Details |
 | :----------------- | :---------------- |
@@ -21,14 +23,8 @@ Find your parcel request details below.
     @endif
 @endcomponent
 
-For your convenience, you can make payment online via our secured online partner by clicking on the **Pay online now** button below.
-
-@component('mail::button', ['url' => route('parcel_checkout', ['parcel'=>$parcel])])
-Pay online now
-@endcomponent
-
 If you have any questions regarding your request, please call us now on {{ config('app.contact_number') }} or send us a mail {{ config('app.contact_email') }}
 
 Thanks,<br>
-##{{ config('app.name') }}
+## {{ config('app.name') }}
 @endcomponent

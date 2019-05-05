@@ -4,7 +4,7 @@
 
 <div class="section is-medium">
     <div class="container is-740">
-        <h1 class="title is-2 is-size-5-mobile">Privacy Policy</h1>
+        <h1 class="title is-2 is-size-4-mobile">Privacy Policy</h1>
         <div class="content">
             <p>PushParcel operates the www.pushparcel.com website, which provides dispatch delivery services in Lagos.</p>
 

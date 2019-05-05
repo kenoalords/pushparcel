@@ -26,8 +26,7 @@ class HomeController extends Controller
      */
     public function index(Request $request, Parcel $parcel)
     {
-        $parcels = $request->user()->parcels()->get();
-        return view('home')->with([ 'parcels' => $parcels ]);
+        return view('home')->with([ 'parcels' => $parcel->orderBy('created_at', 'desc')->simplePaginate(15) ]);
     }
 
     public function logout(Request $request)

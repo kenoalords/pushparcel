@@ -29,6 +29,7 @@ window._ = require("lodash");
 Vue.component('parcel', require('./components/Parcel.vue').default);
 Vue.component('add-biker', require('./components/AddBiker.vue').default);
 Vue.component('add-bike', require('./components/AddBike.vue').default);
+Vue.component('paid', require('./components/Paid.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -114,7 +115,9 @@ if ( $('#get-estimate').length > 0 ){
                 deliveryCost = ( deliveryDistance > 15 ) ? (deliveryDistance * window.push.costPerKmLong) + window.push.basePrice : (deliveryDistance * window.push.costPerKmShort) + window.push.basePrice,
                 pickupCost = pickupDistance * window.push.pickupCostPerKM,
                 totalCost = deliveryCost + pickupCost;
-
+            fbq('track', 'ViewContent', {
+                content_type: 'Get Estimate',
+            });
             swal({
                 title: '₦' + totalCost.toLocaleString('en-GB'),
                 text: `To deliver your package from ${from_address.value} to ${to_address.value}`,
@@ -135,13 +138,15 @@ if ( $('#get-estimate').length > 0 ){
                 }
             }).then( confirm => {
                 if ( confirm ){
+                    fbq('track', 'ViewContent', {
+                        content_type: 'Confirm Estimate',
+                    });
                     window.location.href = `/request-pickup/?sender=${from_address.value}&receiver=${to_address.value}&cost=${totalCost}&distance=${deliveryDistance}`;
                 }
             });
         }).catch( error => {
             console.log(error);
         });
-
 
 
     });

@@ -9,6 +9,9 @@
         <p>Please <a href="{{ route('service_areas') }}" class="has-text-weight-bold" target="_blank">check our service areas</a> to be sure we can pickup your parcel before making your request.</p>
         <hr>
         <parcel :user="null"></parcel>
+        <noscript>
+            <div class="notification is-danger">Please enable JavaScript on your browser in other to make a request. <a href="https://enable-javascript.com/" target="_blank">Click here to find out how to enable JavaScript</a></div>
+        </noscript>
     </div>
 </div>
 
