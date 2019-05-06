@@ -1,5 +1,6 @@
 @extends('layouts.app')
-
+@section('title', 'Contact Us')
+@section('description', 'We are always available to assist you in anyway possible. Give us a call on ' . config('app.contact_number') . ' today.')
 @section('content')
 
 <div class="section is-medium">

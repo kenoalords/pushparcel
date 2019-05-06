@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Careers')
-@section('description', 'Looking for career opportunities in our company?')
+@section('description', 'Looking for career opportunities in logistic? Send your CV now to hello@pushparcel.com for an opportunity to work with us')
 
 @section('content')
 

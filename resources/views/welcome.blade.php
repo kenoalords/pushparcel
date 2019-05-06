@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Home')
-@section('description', 'Want to send packages within Lagos? Save time and money with our dispatch rider delivery service in Lagos')
+@section('description', 'PushParcel is a dispatch rider delivery service that gives you the convinience of delivering your parcels within Lagos on time.')
 
 @section('content')
 
@@ -69,26 +69,27 @@
     </div>
 </section>
 
-<section class="section is-light is-medium">
+<section class="section is-medium is-dark is-payment">
     <div class="container">
         <div class="columns">
-            <div class="column">
-                <figure class="image">
-                    <img src="" alt="">
+            <div class="column is-5">
+                <figure class="image is-128x128" style="margin: 1em auto">
+                    <img src="{{ asset('images/money-white.svg') }}" alt="Get estimate">
                 </figure>
             </div>
-            <div class="column">
-                <h3 class="title is-4">About PushParcel</h3>
-                <p>PushParcel give you the convinience of delivering your parcels within Lagos on time.</p>
-                <p>Our team of professional riders are trained to meet your delivery needs within the shortest possible time.</p>
+            <div class="column is-7">
+                <h3 class="title is-3 is-size-5-mobile">Enjoy convenient payment options</h3>
+                <!-- <p>Want to pay for our dispatch service online or during pickup?</p> -->
+                <p>Enjoy the freedom to choose which payment option works best for you. You can choose to pay online or pay when our dispatch rider picks up your package.</p>
+                <p>Our online payment option is safe, secured and powered by <a href="https://paystack.com">PayStack</a></p>
                 <p>
-                    <a href="{{ route('about') }}" class="has-text-weight-bold">Read more</a>
+                    <a href="{{ route('request_pickup') }}" class="button is-highlight">Request Pickup</a>
                 </p>
             </div>
-
         </div>
     </div>
 </section>
+
 
 @include('partials.calculator')
 

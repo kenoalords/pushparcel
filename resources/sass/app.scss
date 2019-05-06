@@ -96,6 +96,33 @@ h1, h2, h3, h4{
     &.is-light{
         background: #f3f3f3;
     }
+    &.is-dark{
+        background: #111;
+        .title, p, ul, ol{
+            color: #fff;
+        }
+    }
+    &.is-payment{
+        background: url('../images/payment.jpg') no-repeat center;
+        background-size: cover;
+        position: relative;
+
+        &:before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            opacity: .7;
+            z-index: 1;
+        }
+        .container{
+            position: relative;
+            z-index: 2;
+        }
+    }
 }
 
 .button{
@@ -324,6 +351,8 @@ h1, h2, h3, h4{
         }
     }
 }
+
+
 
 .parcel-details{
     p{
