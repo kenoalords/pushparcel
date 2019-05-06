@@ -113,11 +113,9 @@ if ( $('#get-estimate').length > 0 ){
             let deliveryDistance = Math.ceil(result[0].distance.value / 1000),
                 pickupDistance = Math.ceil(result[1].distance.value / 1000 ),
                 deliveryCost = ( deliveryDistance > 15 ) ? (deliveryDistance * window.push.costPerKmLong) + window.push.basePrice : (deliveryDistance * window.push.costPerKmShort) + window.push.basePrice,
-                pickupCost = pickupDistance * window.push.pickupCostPerKM,
+                pickupCost = ( pickupDistance < 15 ) ? pickupDistance * window.push.pickupCostPerKM : pickupDistance * 15,
                 totalCost = deliveryCost + pickupCost;
-            fbq('track', 'ViewContent', {
-                content_type: 'Get Estimate',
-            });
+                console.log(pickupCost);
             swal({
                 title: '₦' + totalCost.toLocaleString('en-GB'),
                 text: `To deliver your package from ${from_address.value} to ${to_address.value}`,
@@ -143,6 +141,9 @@ if ( $('#get-estimate').length > 0 ){
                     });
                     window.location.href = `/request-pickup/?sender=${from_address.value}&receiver=${to_address.value}&cost=${totalCost}&distance=${deliveryDistance}`;
                 }
+            });
+            fbq('track', 'ViewContent', {
+                content_type: 'Get Estimate',
             });
         }).catch( error => {
             console.log(error);

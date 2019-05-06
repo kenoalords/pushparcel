@@ -46,7 +46,7 @@ class ParcelController extends Controller
             $deliveryCost = ( $delivery > 15  )
                                 ? ($delivery * env('COST_PER_KILOMETER_LONG')) + env('BASE_PRICE')
                                 : ($delivery * env('COST_PER_KILOMETER_SHORT')) + env('BASE_PRICE');
-            $pickupCost = env('PICKUP_COST_PER_KM') * $pickup;
+            $pickupCost = ( $pickup < 15 ) ? env('PICKUP_COST_PER_KM') * $pickup : 15 * $pickup;
             $total = $deliveryCost + $pickupCost;
 
             $save_request = $parcel->create([

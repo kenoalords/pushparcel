@@ -300,7 +300,7 @@
                         let deliveryDistance = Math.ceil(result[0].distance.value / 1000),
                             pickupDistance = Math.ceil(result[1].distance.value / 1000 ),
                             deliveryCost = ( deliveryDistance > 15 ) ? (deliveryDistance * window.push.costPerKmLong) + window.push.basePrice : (deliveryDistance * window.push.costPerKmShort) + window.push.basePrice,
-                            pickupCost = pickupDistance * window.push.pickupCostPerKM,
+                            pickupCost = (pickupDistance < 15) ? pickupDistance * window.push.pickupCostPerKM : pickupDistance * 15,
                             totalCost = deliveryCost + pickupCost;
 
                         _this.parcel.price = totalCost;
