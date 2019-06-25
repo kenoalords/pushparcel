@@ -11,13 +11,18 @@
             <div class="columns">
                 <div class="column is-8">
                     <h1 class="title is-1 is-size-3-mobile has-text-white">
-                        Save time and money with our dispatch delivery service.
+                        Send parcels for as little as N400 within Lagos.
                     </h1>
                     <p class="has-text-white">
-                        Focus on selling, let's focus on delivery.
+                        Save time and money with our professional dispatch delivery service. Focus on selling, let's focus on delivery.
                     </p>
                     <p>
-                        <a href="{{ route('request_pickup') }}" class="button is-highlight">Request pickup</a>
+                        <a href="{{ route('get_estimate') }}" class="button is-highlight">Get Estimate</a>
+                        <span class="or">OR</span>
+                        <a href="tel:{{ config('app.contact_number') }}" class="button is-white contact_number">
+                            <img src="{{ asset('images/telephone.svg') }}" alt="Phone Icon">
+                            Call us now
+                        </a>
                         <!-- <a href="#" class="button is-primary">Get estimate</a> -->
                     </p>
                 </div>

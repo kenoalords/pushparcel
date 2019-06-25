@@ -370,6 +370,37 @@ h1, h2, h3, h4{
     background: url('../images/background.jpg') no-repeat center;
     background-size: cover;
     position: relative;
+    .or{
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 900;
+        color: #fff;
+        padding: 10px 1em;
+        position: relative;
+        &:before, &:after{
+            position: absolute;
+            content: "";
+            height: 6px;
+            width: 2px;
+            background: #fff;
+            left: 50%;
+            margin-left: -1px;
+        }
+        &:after{
+            bottom: 0px;
+        }
+        &:before{
+            top: 0;
+        }
+    }
+    .contact_number{
+        img{
+            width: 16px;
+            height: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    }
     &:before{
         content: "";
         position: absolute;
@@ -689,5 +720,9 @@ div{
         .hero-body{
             padding: 7em 2em;
         }
+    }
+    .button{
+        padding-left: 1em;
+        padding-right: 1em;
     }
 }
