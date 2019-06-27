@@ -533,6 +533,10 @@ div{
     transition: opacity .6s ease-out;
 }
 
+.has-text-danger{
+    color: #f00 !important;
+}
+
 .parcel-details{
     .column{
         p{
@@ -722,7 +726,7 @@ div{
         }
     }
     .button{
-        padding-left: 1em;
-        padding-right: 1em;
+        padding-left: .5em;
+        padding-right: .5em;
     }
 }

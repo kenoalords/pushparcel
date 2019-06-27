@@ -68,6 +68,27 @@
         @yield('content')
         @include('partials.footer')
     </div>
+    <div class="modal disclaimer">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box">
+                <h2 class="title is-3 is-size-5-mobile has-text-danger has-text-centered">
+                    <span class="icon"><i class="fas fa-exclamation-triangle"></i></span> <span>Disclaimer!</span>
+                </h2>
+                <hr>
+                <p>
+                    Dealing directly with our riders is highly prohibited and against our company policy.
+                </p>
+                <p>
+                    <span class="has-text-weight-bold">{{ config('app.name') }}</span> will not be held liable for loss of goods as a result of dealing directly with our riders. Call or WhatsApp <a href="tel:{{ config('app.contact_number') }}" class="has-text-weight-bold">{{ config('app.contact_number') }}</a> to request a pickup today.
+                </p>
+                <hr>
+                <p class="has-text-centered">
+                    <a href="javascript:;" class="close button is-danger">I understand</a>
+                </p>
+            </div>
+        </div>
+    </div>
     <!-- <script type="text/javascript" src="https://js.paystack.co/v1/inline.js"></script> -->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ config('app.google_maps_key') }}&libraries=places"></script>
     <script type="text/javascript" src="{{ asset('js/app.js') }}?v=1.1"></script>

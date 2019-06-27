@@ -197,3 +197,13 @@ if ($navbarBurgers.length > 0) {
         });
     });
 }
+
+if ( sessionStorage.getItem('disclaimer') === null ){
+    setTimeout(()=>{
+        $('.modal.disclaimer').addClass('is-active');
+        $('.modal.disclaimer').find('.close').on('click', (e)=>{
+            $('.modal.disclaimer').removeClass('is-active');
+            sessionStorage.setItem('disclaimer', true);
+        });
+    }, 2000)
+}
