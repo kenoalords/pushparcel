@@ -56,6 +56,10 @@ Vue.component('paid', require('./components/Paid.vue').default);
      store,
  });
 
+ $('body').on('click', '#clear-estimate-form', (e) => {
+    $('#get-estimate').trigger('reset');
+ });
+
 // Estimate calculator
 if ( $('#get-estimate').length > 0 ){
     let options = {
@@ -94,7 +98,7 @@ if ( $('#get-estimate').length > 0 ){
         }
 
         swal({
-            title: "Getting estimate..",
+            title: "Calculating estimate...",
             content: {
                 element: "div",
                 attributes: {
@@ -106,8 +110,6 @@ if ( $('#get-estimate').length > 0 ){
             closeOnEsc: false,
         });
         let distance = getDistance(from_address.value, to_address.value);
-
-
         distance.then( result => {
             swal.close();
             let deliveryDistance = Math.ceil(result[0].distance.value / 1000),
@@ -115,10 +117,10 @@ if ( $('#get-estimate').length > 0 ){
                 deliveryCost = ( deliveryDistance > 15 ) ? (deliveryDistance * window.push.costPerKmLong) + window.push.basePrice : (deliveryDistance * window.push.costPerKmShort) + window.push.basePrice,
                 pickupCost = ( pickupDistance < 15 ) ? pickupDistance * window.push.pickupCostPerKM : pickupDistance * 15,
                 totalCost = deliveryCost + pickupCost;
-                console.log(pickupCost);
+
             swal({
                 title: '₦' + totalCost.toLocaleString('en-GB'),
-                text: `To deliver your package from ${from_address.value} to ${to_address.value}`,
+                text: `To pickup your parcel from ${from_address.value} and deliver to ${to_address.value}`,
                 closeOnEsc: false,
                 closeOnClickOutside: false,
                 buttons: {
@@ -146,10 +148,36 @@ if ( $('#get-estimate').length > 0 ){
                 content_type: 'Get Estimate',
             });
         }).catch( error => {
-            console.log(error);
+            if ( error.error === 404 ){
+                swal({
+                    icon: "error",
+                    text: "We couldn't determine your location. Please check the sender and receiver address and try again.",
+                    buttons: {
+                        cancel: {
+                            text: "Try Again",
+                            value: null,
+                            visible: true,
+                            closeModal: true,
+                        }
+                    }
+                });
+            }
+            if ( error.error === 406 ){
+                swal({
+                    icon: "error",
+                    text: "Sorry, we don't pickup and deliver parcels at distances longer than 100km within Lagos.",
+                    buttons: {
+                        cancel: {
+                            text: "Choose another destination",
+                            value: null,
+                            visible: true,
+                            closeModal: true,
+                        }
+                    }
+                });
+            }
+            return;
         });
-
-
     });
 
     function getDistance(origin, destination){
@@ -163,11 +191,16 @@ if ( $('#get-estimate').length > 0 ){
              }, function(results, status){
                  if ( status === 'OK' ){
                      let row = results.rows[0].elements;
-                     // console.log(results);
-                     if ( row[0].status === 'OK' ){
-                         resolve(row);
-                     } else if ( row.status === 'NOT_FOUND' ) {
-                         reject({ error: 'Address Not Found' });
+
+                     if ( row[0].status === 'OK' && row[1].status === 'OK'){
+                        let totalDistance = row[0].distance.value + row[1].distance.value;
+                        if ( totalDistance > 100000 ){
+                            reject({ error: 406 });
+                        } else {
+                            resolve(row);
+                        }
+                     } else {
+                         reject({ error: 404 });
                      }
                  } else {
                      reject({ error: 'Distance cannot be determined!' });
