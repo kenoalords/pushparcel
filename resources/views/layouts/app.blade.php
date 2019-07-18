@@ -31,7 +31,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,700,900|Lato:300,400,700,900" rel="stylesheet" type="text/css">
     <link rel="icon" href="{{ asset('images/icon.png') }}">
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}?v=1.3" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}?v=1.4" rel="stylesheet">
     <script type="text/javascript">
         window.push = {
             basePrice: {{ env('BASE_PRICE') }},
@@ -94,7 +94,7 @@
     <!-- <script type="text/javascript" src="https://js.paystack.co/v1/inline.js"></script> -->
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ config('app.google_maps_key') }}&libraries=places"></script>
-    <script type="text/javascript" src="{{ asset('js/app.js') }}?v=1.3"></script>
+    <script type="text/javascript" src="{{ asset('js/app.js') }}?v=1.4"></script>
     @if ( App::environment() === 'production' )
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-139456203-1"></script>
