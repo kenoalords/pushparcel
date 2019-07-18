@@ -74,7 +74,9 @@
     </div>
 </section>
 
-<section class="section is-medium is-dark is-payment">
+<phone-lead></phone-lead>
+
+<!-- <section class="section is-medium is-dark is-payment">
     <div class="container">
         <div class="columns">
             <div class="column is-5">
@@ -83,8 +85,8 @@
                 </figure>
             </div>
             <div class="column is-7">
-                <h3 class="title is-3 is-size-5-mobile">Enjoy convenient payment options</h3>
-                <!-- <p>Want to pay for our dispatch service online or during pickup?</p> -->
+                <h3 class="title is-3">Enjoy convenient payment options</h3>
+                <p>Want to pay for our dispatch service online or during pickup?</p>
                 <p>Enjoy the freedom to choose which payment option works best for you. You can choose to pay online or pay when our dispatch rider picks up your package.</p>
                 <p>Our online payment option is safe, secured and powered by <a href="https://paystack.com">PayStack</a></p>
                 <p>
@@ -93,7 +95,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 
 @include('partials.calculator')

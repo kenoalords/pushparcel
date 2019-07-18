@@ -28,7 +28,7 @@
     <!-- Fonts -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:400,700,900" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,700,900|Lato:300,400,700,900" rel="stylesheet" type="text/css">
     <link rel="icon" href="{{ asset('images/icon.png') }}">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}?v=1.3" rel="stylesheet">
@@ -40,6 +40,7 @@
             officeAddress: "{{ config('app.office_address') }}",
             pickupCostPerKM: {{ env('PICKUP_COST_PER_KM') }},
             contactNumber: "{{ config('app.contact_number') }}",
+            images: "{{ asset('images') }}"
         }
     </script>
     @if ( App::environment() === 'production' )
@@ -68,6 +69,7 @@
         @yield('content')
         @include('partials.footer')
     </div>
+
     <div class="modal disclaimer">
         <div class="modal-background"></div>
         <div class="modal-content">
@@ -90,6 +92,7 @@
         </div>
     </div>
     <!-- <script type="text/javascript" src="https://js.paystack.co/v1/inline.js"></script> -->
+
     <script src="https://maps.googleapis.com/maps/api/js?key={{ config('app.google_maps_key') }}&libraries=places"></script>
     <script type="text/javascript" src="{{ asset('js/app.js') }}?v=1.3"></script>
     @if ( App::environment() === 'production' )

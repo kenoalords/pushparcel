@@ -47,6 +47,8 @@ Route::get('/about-us', function(){
     return view('page.about');
 })->name('about');
 
+Route::post('/lead', 'PhoneLeadController@lead');
+
 // Request pickup
 Route::match(['get', 'post'], '/request-pickup', 'ParcelController@requestPickup')->name('request_pickup');
 Route::post('/request-pickup/{parcel}/payment', 'ParcelController@payment');

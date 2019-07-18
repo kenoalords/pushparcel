@@ -123,6 +123,18 @@ h1, h2, h3, h4{
             z-index: 2;
         }
     }
+    &.is-brand{
+        background: $baseColor;
+        .title, p{
+            color: #fff;
+        }
+    }
+}
+
+.columns{
+    &.is-aligned-center{
+        align-items: center;
+    }
 }
 
 .button{
@@ -626,6 +638,62 @@ div{
     }
 }
 
+#phone-lead{
+    transition: all .3s ease-in-out;
+    display: flex;
+    visibility: hidden;
+    z-index: -1;
+    opacity: 0;
+    // transform: translateY(100px);
+    &.is-active{
+        visibility: visible;
+        z-index: 999;
+        opacity: 1;
+        // transform: translateY(0);
+    }
+    .modal-background{
+        background: #0a142d;
+        opacity: .95;
+    }
+    .modal-content{
+        box-shadow: 0 0 6px rgba(0,0,0,.2) !important;
+        max-width: 90%;
+        max-height: calc(100vh - 100px);
+        .box{
+            border-radius: 2px;
+            padding: 0;
+            background: none;
+            img{
+                max-width: 64px;
+                height: auto;
+                margin: 0 auto .5em;
+            }
+            .content, header{
+                padding: 3em;
+            }
+            header{
+                background: whitesmoke;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+            .content{
+                background: #fff;
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+                .button{
+                    min-height: 3em;
+                }
+                .field{
+                    margin-bottom: 1em;
+                }
+            }
+            hr{
+                height: 1px;
+            }
+        }
+    }
+}
+
 @media screen and (max-width:540px){
     #app{
         margin-top: 2.8em;
@@ -740,5 +808,17 @@ div{
     .button{
         padding-left: .5em;
         padding-right: .5em;
+    }
+    #phone-lead{
+        .modal-content{
+            .box{
+                .content, header{
+                    padding: 1.5em;
+                }
+            }
+        }
+    }
+    .section.is-payment{
+        text-align: center;
     }
 }

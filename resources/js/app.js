@@ -26,6 +26,7 @@ window._ = require("lodash");
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+let phoneLead = Vue.component('phone-lead', require('./components/PhoneLead.vue').default);
 Vue.component('parcel', require('./components/Parcel.vue').default);
 Vue.component('add-biker', require('./components/AddBiker.vue').default);
 Vue.component('add-bike', require('./components/AddBike.vue').default);
@@ -240,3 +241,9 @@ if ( sessionStorage.getItem('disclaimer') === null ){
         });
     }, 2000)
 }
+
+$('#elite-signup').on('click', function(e){
+    e.preventDefault();
+    // import PhoneLead from "./components/PhoneLead.vue";
+    phoneLead.methods.openModal();
+});
